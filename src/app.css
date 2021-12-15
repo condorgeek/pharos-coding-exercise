@@ -128,7 +128,10 @@ li:active {
 .down {
     transform: rotate(45deg);
     -webkit-transform: rotate(45deg);
+    margin-bottom: 0.20rem;
 }
+
+
 
 .mt-1 {
     margin-top: 0.25rem;

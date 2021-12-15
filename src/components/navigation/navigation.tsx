@@ -71,10 +71,15 @@ const Navigation: FC<NavigationProps> = ({data, onClick}) => {
         const level1 = buildMenuLevelFor('BCAP1', data);
         // @ts-ignore
         return [...level1.keys()].map((key, index) => {
+            const isOpen = isLevel2Open.current.isOpen && showLevel2.key === key;
+
             // @ts-ignore
             return <div key={index} className='menu-entry-container mb-1' onClick={handleLevel1Click(key)}>
-                <span className='menu-entry'><i className="arrow down mr-1"/>{key}</span>
-                {isLevel2Open.current.isOpen && showLevel2.key === key &&
+                <span className='menu-entry'>
+                    {isOpen ? <i className="arrow up mr-1"/> : <i className="arrow down mr-1"/>}
+                    {key}
+                </span>
+                {isOpen &&
                     // @ts-ignore
                     renderMenuLevel2(level1.get(key))}
             </div>;
