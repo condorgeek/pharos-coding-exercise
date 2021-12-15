@@ -7,15 +7,22 @@ h1, h2, h3, h4, h5 {
     margin-top: 0.25rem;
 }
 
+ul {
+    margin: 0;
+    padding: 0 0 0 1rem;
+}
+
+li:active {
+    font-weight: bold;
+}
+
 .app-container {
     border: 1px solid lightgray;
     background-color: #fafafa;
     display: flex;
     width: 100%;
     min-height: 90vh;
-
 }
-
 
 /******************************/
 /*        NAVIGATION          */
@@ -41,6 +48,15 @@ h1, h2, h3, h4, h5 {
     cursor: pointer;
 }
 
+.menu-entry-selected {
+    color: black;
+    font-weight: bold;
+}
+
+.menu-entry-selection {
+    font-weight: bold;
+}
+
 .menu-entry:hover {
     color: gray;
 }
@@ -55,7 +71,6 @@ h1, h2, h3, h4, h5 {
 .slider {
     width: 100%;
 }
-
 
 /******************************/
 /*        DASHBOARD           */

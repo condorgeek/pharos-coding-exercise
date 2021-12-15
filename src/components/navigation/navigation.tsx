@@ -1,4 +1,4 @@
-import React, {FC, useState} from "react";
+import React, {FC, useRef, useState} from "react";
 import {buildMenuLevelFor, DataType} from "../utils/utils";
 
 
@@ -7,23 +7,33 @@ type NavigationProps = {
     onClick: (name: string,
               data: DataType[]) => void
 }
+type Level = {
+    isOpen: boolean,
+    key: string | null,
+}
 const Navigation: FC<NavigationProps> = ({data, onClick}) => {
-    const [showLevel2, setShowLevel2] = useState<string | null>(null);
-    const [showLevel3, setShowLevel3] = useState<string | null>(null);
+    const [showLevel2, setShowLevel2] = useState<Level>({isOpen: false, key: null});
+    const [showLevel3, setShowLevel3] = useState<Level>({isOpen: false, key: null});
+    const isLevel2Open = useRef<Level>({isOpen: false, key: null});
+    const isLevel3Open = useRef<Level>({isOpen: false, key: null});
 
     const handleLevel1Click = (key: string) => (event: any) => {
         event.preventDefault();
-        console.log('2>> ', showLevel2, key)
-        setShowLevel2(key);
-        // setShowLevel2(showLevel2 === key && showLevel3 ? null : key);
+        event.stopPropagation();
+
+        setShowLevel2({...showLevel2, key: key});
+        isLevel2Open.current = {
+            isOpen: !(isLevel2Open.current.key === key && isLevel2Open.current.isOpen),
+            key: key
+        }
     }
 
     const handleLevel2Click = (key: string) => (event: any) => {
         event.preventDefault();
-        console.log('3>> ', showLevel3, key)
-        setShowLevel3(key);
-        // setShowLevel3(showLevel3 === key ? null : key);
+        event.stopPropagation();
 
+        setShowLevel3({...showLevel3, key: key});
+        isLevel3Open.current = {isOpen: !isLevel3Open.current.isOpen, key: key}
     }
 
     const renderMenuLevel3 = (data: DataType[]) => {
@@ -31,13 +41,13 @@ const Navigation: FC<NavigationProps> = ({data, onClick}) => {
         // @ts-ignore
         const level3Entries = [...level3.keys()].map((key, index) => {
             // @ts-ignore
-            return <div key={index} className='mb-1' onClick={() => onClick(key, level3.get(key))}>
-                <span className='menu-entry'><i className="arrow right mr-1"/>{key}</span>
-            </div>;
+            return <ul key={index} className='mb-1' onClick={() => onClick(key, level3.get(key))}>
+                <li className='menu-entryXX ml-1'><span className='menu-entry'>{key}</span></li>
+            </ul>;
         })
-        return <div className='ml-3 mt-1'>
+        return <ul className='ml-1 mt-1'>
             {level3Entries}
-        </div>
+        </ul>
     }
 
     const renderMenuLevel2 = (data: DataType[]) => {
@@ -47,7 +57,7 @@ const Navigation: FC<NavigationProps> = ({data, onClick}) => {
             // @ts-ignore
             return <div key={index} className='mb-1' onClick={handleLevel2Click(key)}>
                 <span className='menu-entry'><i className="arrow down mr-1"/>{key}</span>
-                {showLevel3 === key &&
+                {showLevel3.key === key &&
                     // @ts-ignore
                     renderMenuLevel3(level2.get(key))}
             </div>;
@@ -64,7 +74,7 @@ const Navigation: FC<NavigationProps> = ({data, onClick}) => {
             // @ts-ignore
             return <div key={index} className='menu-entry-container mb-1' onClick={handleLevel1Click(key)}>
                 <span className='menu-entry'><i className="arrow down mr-1"/>{key}</span>
-                {showLevel2 === key &&
+                {isLevel2Open.current.isOpen && showLevel2.key === key &&
                     // @ts-ignore
                     renderMenuLevel2(level1.get(key))}
             </div>;
