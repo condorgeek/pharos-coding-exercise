@@ -1,6 +1,5 @@
 import React, {FC, useState} from "react";
 
-// export const MAX_SPENDING = '100000'
 export const MAX_SPENDING = 100000;
 
 const SpendingSlider: FC<{ onSpendingChange: (amount: number) => void }> = ({onSpendingChange}) => {

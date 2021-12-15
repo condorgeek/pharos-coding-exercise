@@ -12,6 +12,7 @@ type Level = {
     key: string | null,
 }
 const Navigation: FC<NavigationProps> = ({data, onClick}) => {
+    // possibly some improvement for less state variable here - will do when time allows
     const [showLevel2, setShowLevel2] = useState<Level>({isOpen: false, key: null});
     const [showLevel3, setShowLevel3] = useState<Level>({isOpen: false, key: null});
     const isLevel2Open = useRef<Level>({isOpen: false, key: null});
@@ -20,7 +21,6 @@ const Navigation: FC<NavigationProps> = ({data, onClick}) => {
     const handleLevel1Click = (key: string) => (event: any) => {
         event.preventDefault();
         event.stopPropagation();
-
         setShowLevel2({...showLevel2, key: key});
         isLevel2Open.current = {
             isOpen: !(isLevel2Open.current.key === key && isLevel2Open.current.isOpen),
@@ -31,18 +31,27 @@ const Navigation: FC<NavigationProps> = ({data, onClick}) => {
     const handleLevel2Click = (key: string) => (event: any) => {
         event.preventDefault();
         event.stopPropagation();
-
         setShowLevel3({...showLevel3, key: key});
-        isLevel3Open.current = {isOpen: !isLevel3Open.current.isOpen, key: key}
+        isLevel3Open.current = {
+            isOpen: !(isLevel3Open.current.key === key && isLevel3Open.current.isOpen),
+            key: key
+        }
+    }
+
+    const handleLevel3Click = (key: string, data: DataType[], event: any) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClick(key, data);
     }
 
     const renderMenuLevel3 = (data: DataType[]) => {
         const level3 = buildMenuLevelFor('BCAP3', data);
         // @ts-ignore
         const level3Entries = [...level3.keys()].map((key, index) => {
-            // @ts-ignore
-            return <ul key={index} className='mb-1' onClick={() => onClick(key, level3.get(key))}>
-                <li className='menu-entryXX ml-1'><span className='menu-entry'>{key}</span></li>
+            return <ul key={index} className='mb-1'
+                        // @ts-ignore
+                       onClick={(event) => handleLevel3Click(key, level3.get(key), event)}>
+                <li className='ml-1'><span className='menu-entry'>{key}</span></li>
             </ul>;
         })
         return <ul className='ml-1 mt-1'>
@@ -54,10 +63,16 @@ const Navigation: FC<NavigationProps> = ({data, onClick}) => {
         const level2 = buildMenuLevelFor('BCAP2', data);
         // @ts-ignore
         const level2Entries = [...level2.keys()].map((key, index) => {
+            const isOpen = isLevel3Open.current.isOpen && showLevel3.key === key;
+
             // @ts-ignore
             return <div key={index} className='mb-1' onClick={handleLevel2Click(key)}>
-                <span className='menu-entry'><i className="arrow down mr-1"/>{key}</span>
-                {showLevel3.key === key &&
+                <span className='menu-entry'>
+                    {isOpen ? <i className="arrow up mr-1"/> : <i className="arrow down mr-1"/>}
+                    {key}
+                </span>
+                {/*{showLevel3.key === key &&*/}
+                {isOpen &&
                     // @ts-ignore
                     renderMenuLevel3(level2.get(key))}
             </div>;
